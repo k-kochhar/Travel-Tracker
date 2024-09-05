@@ -1,12 +1,12 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_socketio import SocketIO
 from nlp_utils import extract_entities
 from geocoding_utils import get_coordinates
-from flask_socketio import SocketIO
 
 app = Flask(__name__)
-socketio = SocketIO(app)
 CORS(app)  # Allow CORS for all routes
+socketio = SocketIO(app, cors_allowed_origins="*")  # Allow CORS for socket.io
 
 # In-memory storage for locations
 locations = [
@@ -29,13 +29,12 @@ def process_post():
     for location in locations:
         coordinates = get_coordinates(location)
         if coordinates:
-            location_data.append({
-                "name": location,
-                "coordinates": coordinates
-            })
-
-    for loc in location_data:
-        socketio.emit('newLocation', loc)
+            location_info = {
+                'location': location,
+                'coordinates': coordinates
+            }
+            location_data.append(location_info)
+            socketio.emit('newLocation', location_info)
 
     return jsonify({"locations": location_data})
 

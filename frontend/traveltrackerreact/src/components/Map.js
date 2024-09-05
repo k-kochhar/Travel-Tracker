@@ -18,6 +18,10 @@ const customIcon = new L.Icon({
 const Map = () => {
     const [locations, setLocations] = useState([]);
 
+    const addMarker = (lat, lng, name) => {
+        const marker = L.marker([lat, lng], { icon: customIcon }).addTo;
+    };
+
     useEffect(() => {
         // Fetch locations from backend
         axios.get('http://127.0.0.1:5000/locations')
